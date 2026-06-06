@@ -19,21 +19,20 @@
       }
     },
     {
-      "id": "generate-review",
+      "id": "ai-review",
       "type": "ai.generate",
       "depends_on": ["get-diff"],
       "config": {
-        "prompt": "Review this diff. List issues with file:line format.\n\n{{steps.get-diff.diff}}",
-        "output_format": "text"
+        "prompt": "Review this code diff:\n\n{{steps.get-diff.diff}}\n\nProvide free text comments with file path and line number for each issue found in format: 'path/to/file.go:42 - issue description'"
       }
     },
     {
       "id": "post-inline-comments",
       "type": "github",
-      "depends_on": ["generate-review"],
+      "depends_on": ["ai-review"],
       "config": {
         "operation": "post_inline_comments",
-        "body": "{{steps.generate-review.content}}",
+        "body": "{{steps.ai-review.content}}",
         "output_format": "text",
         "dedup": true
       }
@@ -41,10 +40,10 @@
     {
       "id": "post-summary",
       "type": "github",
-      "depends_on": ["risk-analysis", "generate-review"],
+      "depends_on": ["risk-analysis", "ai-review"],
       "config": {
         "operation": "post_comment",
-        "body": "🤖 AI Review\n\nRisk: {{steps.risk-analysis.content}}/10\n\n{{steps.generate-review.content}}"
+        "body": "🤖 AI Review\n\nRisk: {{steps.risk-analysis.content}}/10\n\n{{steps.ai-review.content}}"
       }
     }
   ]
