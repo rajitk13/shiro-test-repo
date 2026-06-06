@@ -4,11 +4,9 @@
   "steps": [
     {
       "id": "get-diff",
-      "type": "git.diff",
+      "type": "github",
       "config": {
-        "operation": "diff",
-        "base": "{{env.GITHUB_BASE_REF}}",
-        "target": "{{env.GITHUB_SHA}}"
+        "operation": "get_diff"
       }
     },
     {
