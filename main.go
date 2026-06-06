@@ -5,9 +5,13 @@ import "fmt"
 func main() {
 	result := add(5, 3)
 	fmt.Printf("Result: %d\n", result)
-	
+
 	str := reverse("hello")
 	fmt.Printf("Reversed: %s\n", str)
+
+	// New function with potential issues
+	num := divide(10, 0)
+	fmt.Printf("Division: %d\n", num)
 }
 
 func add(a, b int) int {
@@ -20,4 +24,14 @@ func reverse(s string) string {
 		runes[i], runes[j] = runes[j], runes[i]
 	}
 	return string(runes)
+}
+
+func divide(a, b int) int {
+	// Potential division by zero issue
+	return a / b
+}
+
+func unsafeSliceAccess(arr []int, index int) int {
+	// No bounds checking - potential panic
+	return arr[index]
 }
