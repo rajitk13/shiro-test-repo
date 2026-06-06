@@ -14,7 +14,7 @@
       "type": "ai.generate",
       "depends_on": ["get-diff"],
       "config": {
-        "prompt": "Analyze this code diff for deployment risk. Rate the risk from 1-10 where:\n- 1-3: Low risk (minor issues, no security concerns)\n- 4-6: Medium risk (some issues, potential security concerns)\n- 7-10: High risk (critical security issues, major bugs)\n\nDiff:\n{{steps.get-diff.diff}}\n\nReturn ONLY a single number (1-10) representing the risk score.",
+        "prompt": "Rate this code diff risk 1-10. 1=safe, 10=critical.\n\n{{steps.get-diff.diff}}\n\nReturn only the number.",
         "output_format": "text"
       }
     },
@@ -23,26 +23,28 @@
       "type": "ai.generate",
       "depends_on": ["get-diff"],
       "config": {
-        "prompt": "Review this code diff and provide detailed feedback. Include:\n1. Security vulnerabilities\n2. Performance issues\n3. Code quality concerns\n4. Specific file paths and line numbers\n\nDiff:\n{{steps.get-diff.diff}}",
+        "prompt": "Review this diff. List issues with file:line format.\n\n{{steps.get-diff.diff}}",
         "output_format": "text"
+      }
+    },
+    {
+      "id": "post-inline-comments",
+      "type": "github",
+      "depends_on": ["generate-review"],
+      "config": {
+        "operation": "post_inline_comments",
+        "body": "{{steps.generate-review.content}}",
+        "output_format": "text",
+        "dedup": true
       }
     },
     {
       "id": "post-summary",
       "type": "github",
-      "depends_on": ["generate-review"],
+      "depends_on": ["risk-analysis", "generate-review"],
       "config": {
         "operation": "post_comment",
-        "body": "🤖 AI Code Review Summary\n\nRisk Score: {{steps.risk-analysis.content}}/10\n\n{{steps.generate-review.content}}"
-      }
-    },
-    {
-      "id": "generate-release-notes",
-      "type": "ai.generate",
-      "depends_on": ["get-diff"],
-      "config": {
-        "prompt": "Generate release notes from this code diff. Focus on user-facing changes and improvements.\n\nDiff:\n{{steps.get-diff.diff}}",
-        "output_format": "text"
+        "body": "🤖 AI Review\n\nRisk: {{steps.risk-analysis.content}}/10\n\n{{steps.generate-review.content}}"
       }
     }
   ]
