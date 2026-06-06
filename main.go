@@ -12,6 +12,11 @@ func main() {
 	// New function with potential issues
 	num := divide(10, 0)
 	fmt.Printf("Division: %d\n", num)
+
+	// Additional test case
+	slice := []int{1, 2, 3}
+	val := unsafeSliceAccess(slice, 5)
+	fmt.Printf("Slice value: %d\n", val)
 }
 
 func add(a, b int) int {
