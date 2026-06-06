@@ -1,42 +1,112 @@
 package main
 
-import "fmt"
+import (
+	"crypto/md5"
+	"database/sql"
+	"encoding/hex"
+	"fmt"
+	"log"
+	"sync"
+	"time"
+)
+
+// Hardcoded API key - SECURITY ISSUE
+const API_KEY = "sk-1234567890abcdef"
+
+var db *sql.DB
 
 func main() {
-	result := add(5, 3)
-	fmt.Printf("Result: %d\n", result)
+	// Demo 1: SQL Injection vulnerability
+	userID := getUserInput()
+	query := fmt.Sprintf("SELECT * FROM users WHERE id = %s", userID)
+	fmt.Printf("Query: %s\n", query)
 
-	str := reverse("hello")
-	fmt.Printf("Reversed: %s\n", str)
+	// Demo 2: Inefficient loop
+	data := make([]int, 1000000)
+	result := processData(data)
+	fmt.Printf("Processed: %d\n", result)
 
-	// New function with potential issues
+	// Demo 3: Missing error handling
+	hashPassword("admin123")
+
+	// Demo 4: Race condition
+	counter := 0
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go func() {
+			counter++
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	fmt.Printf("Counter: %d\n", counter)
+
+	// Demo 5: Division by zero
 	num := divide(10, 0)
 	fmt.Printf("Division: %d\n", num)
-
-	// Additional test case
-	slice := []int{1, 2, 3}
-	val := unsafeSliceAccess(slice, 5)
-	fmt.Printf("Slice value: %d\n", val)
 }
 
-func add(a, b int) int {
-	return a + b
+func getUserInput() string {
+	return "1 OR 1=1"
 }
 
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
+func processData(data []int) int {
+	sum := 0
+	for i := 0; i < len(data); i++ {
+		sum += data[i]
 	}
-	return string(runes)
+	return sum
+}
+
+func hashPassword(password string) string {
+	// MD5 is deprecated for password hashing - SECURITY ISSUE
+	hash := md5.Sum([]byte(password))
+	return hex.EncodeToString(hash[:])
 }
 
 func divide(a, b int) int {
-	// Potential division by zero issue
+	// No error handling for division by zero
 	return a / b
 }
 
 func unsafeSliceAccess(arr []int, index int) int {
-	// No bounds checking - potential panic
+	// No bounds checking
 	return arr[index]
+}
+
+func initDB() {
+	// Missing error handling
+	db, _ = sql.Open("mysql", "user:password@/dbname")
+}
+
+func processWithTimeout() {
+	// No timeout handling
+	ch := make(chan string)
+	result := <-ch
+	fmt.Println(result)
+}
+
+func logSensitiveData() {
+	// Logging sensitive data
+	log.Printf("Processing payment with card: %s", "4111-1111-1111-1111")
+}
+
+func inefficientStringConcat() []string {
+	// Inefficient string concatenation in loop
+	result := ""
+	for i := 0; i < 1000; i++ {
+		result += "data"
+	}
+	return []string{result}
+}
+
+func missingNilCheck(data *string) {
+	// No nil check before dereferencing
+	fmt.Println(*data)
+}
+
+func sleepWithoutContext() {
+	// Sleep without context cancellation
+	time.Sleep(10 * time.Second)
 }

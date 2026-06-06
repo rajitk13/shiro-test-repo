@@ -7,3 +7,7 @@ models:
     model: gemini-3.5-flash
     base_url: https://generativelanguage.googleapis.com
     api_key: "{{env.GEMINI_API_KEY}}"
+
+# Slack webhook for notifications (optional)
+slack:
+  webhook_url: "{{env.SLACK_WEBHOOK_URL}}"
