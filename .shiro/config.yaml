@@ -1,0 +1,9 @@
+# AI model configuration for code review
+# Using Gemini AI (Google AI Studio - free tier)
+
+models:
+  gemini:
+    type: gemini
+    model: gemini-1.5-flash
+    base_url: https://generativelanguage.googleapis.com
+    api_key: "{{env.GEMINI_API_KEY}}"
