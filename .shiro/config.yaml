@@ -4,6 +4,6 @@
 models:
   gemini:
     type: gemini
-    model: gemini-1.5-flash-002
+    model: gemini-1.5-pro
     base_url: https://generativelanguage.googleapis.com
     api_key: "{{env.GEMINI_API_KEY}}"
