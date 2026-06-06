@@ -11,16 +11,15 @@ permissions:
 jobs:
   code-review:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rajitk13/shiro-automation:latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Run Shiro Code Review
-        uses: rajitk13/shiro-automation@latest
-        with:
-          workflow: .shiro/workflows/github-code-review.json
-          config: .shiro/config.yaml
+        run: shiro run
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
