@@ -7,8 +7,8 @@
       "type": "git.diff",
       "config": {
         "operation": "diff",
-        "base": "{{env.GITHUB_BASE_REF || 'main'}}",
-        "target": "{{env.GITHUB_SHA || 'HEAD'}}"
+        "base": "{{env.GITHUB_BASE_REF}}",
+        "target": "{{env.GITHUB_SHA}}"
       }
     },
     {
