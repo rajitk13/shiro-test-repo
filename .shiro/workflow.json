@@ -33,8 +33,18 @@
       "config": {
         "operation": "post_inline_comments",
         "body": "{{steps.ai-review.content}}",
+        "review_body": "🤖 AI Review — Risk Score: {{steps.risk-analysis.content}}/10",
         "output_format": "text",
         "dedup": true
+      }
+    },
+    {
+      "id": "changelog-summary",
+      "type": "ai.generate",
+      "depends_on": ["get-diff"],
+      "config": {
+        "prompt": "Generate a concise changelog summary from this code diff. Focus on what changed, why it matters, and any breaking changes. Keep it under 200 words.\n\n{{steps.get-diff.diff}}",
+        "output_format": "text"
       }
     },
     {
@@ -44,6 +54,18 @@
       "config": {
         "operation": "post_comment",
         "body": "🤖 AI Review\n\nRisk: {{steps.risk-analysis.content}}/10\n\n{{steps.ai-review.content}}"
+      }
+    },
+    {
+      "id": "slack-notify",
+      "type": "slack.notify",
+      "depends_on": ["changelog-summary", "risk-analysis"],
+      "config": {
+        "webhook_url": "{{env.SLACK_WEBHOOK_URL}}",
+        "channel": "#deployments",
+        "message": "🤖 AI Changelog Summary\n\n```\n{{steps.changelog-summary.content}}\n```\n\nRisk Score: {{steps.risk-analysis.content}}/10",
+        "username": "Shiro Bot",
+        "icon_emoji": ":robot_face:"
       }
     }
   ]
