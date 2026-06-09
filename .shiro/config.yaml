@@ -5,6 +5,6 @@ models:
   openrouter:
     type: openai
     api_key: "{{env.API_KEY}}"
-    model: nex-agi/nex-n2-pro:free
+    model: nvidia/nemotron-3-ultra-550b-a55b:free
     base_url: https://openrouter.ai/api/v1
     timeout: 100000
