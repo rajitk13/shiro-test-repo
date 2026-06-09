@@ -1,10 +1,10 @@
 # AI model configuration for code review
-# Using Gemini AI (Google AI Studio - free tier)
+# Using OpenRouter
 
 models:
-  gemini:
-    type: gemini
-    model: gemini-3.5-flash
-    base_url: https://generativelanguage.googleapis.com
-    api_key: "{{env.GEMINI_API_KEY}}"
+  openrouter:
+    type: openrouter
+    model: nex-agi/nex-n2-pro:free
+    base_url: https://openrouter.ai/api/v1
+    api_key: "{{env.OPENROUTER_API_KEY}}"
     timeout: 1000
