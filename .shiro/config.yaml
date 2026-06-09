@@ -4,7 +4,7 @@
 models:
   openrouter:
     type: openai
+    api_key: "{{env.OPENROUTER_API_KEY}}"
     model: nex-agi/nex-n2-pro:free
     base_url: https://openrouter.ai/api/v1
-    api_key: "{{env.OPENROUTER_API_KEY}}"
     timeout: 1000
