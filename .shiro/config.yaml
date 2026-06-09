@@ -2,9 +2,8 @@
 # Using OpenAI provider with OpenRouter base URL
 
 models:
-  openrouter:
-    type: openai
-    api_key: "{{env.API_KEY}}"
-    model: nvidia/nemotron-3-ultra-550b-a55b:free
-    base_url: https://openrouter.ai/api/v1
+  gemini:
+    type: gemini
+    api_key: "{{env.GEMINI_API_KEY}}"
+    model: gemini-3.5-flash
     timeout: 100000
