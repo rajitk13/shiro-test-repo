@@ -1,0 +1,72 @@
+{
+  "name": "deployment-governance",
+  "description": "AI-powered deployment governance with risk analysis and approvals",
+  "steps": [
+    {
+      "id": "get-diff",
+      "type": "github",
+      "config": {
+        "operation": "get_diff"
+      }
+    },
+    {
+      "id": "risk-analysis",
+      "type": "ai.generate",
+      "depends_on": ["get-diff"],
+      "config": {
+        "prompt": "Rate this code diff risk 1-10. 1=safe, 10=critical.\n\n{{steps.get-diff.diff}}\n\nReturn only the number.",
+        "output_format": "text"
+      }
+    },
+    {
+      "id": "ai-review",
+      "type": "ai.generate",
+      "depends_on": ["get-diff"],
+      "config": {
+        "prompt": "Review this code diff:\n\n{{steps.get-diff.diff}}\n\nProvide free text comments with file path and line number for each issue found in format: 'path/to/file.go:42 - issue description'"
+      }
+    },
+    {
+      "id": "post-inline-comments",
+      "type": "github",
+      "depends_on": ["ai-review"],
+      "config": {
+        "operation": "post_inline_comments",
+        "body": "{{steps.ai-review.content}}",
+        "review_body": "🤖 AI Review — Risk Score: {{steps.risk-analysis.content}}/10",
+        "output_format": "text",
+        "dedup": true
+      }
+    },
+    {
+      "id": "changelog-summary",
+      "type": "ai.generate",
+      "depends_on": ["get-diff"],
+      "config": {
+        "prompt": "Generate a concise changelog summary from this code diff. Focus on what changed, why it matters, and any breaking changes. Keep it under 200 words.\n\n{{steps.get-diff.diff}}",
+        "output_format": "text"
+      }
+    },
+    {
+      "id": "post-summary",
+      "type": "github",
+      "depends_on": ["risk-analysis", "ai-review"],
+      "config": {
+        "operation": "post_comment",
+        "body": "🤖 AI Review\n\nRisk: {{steps.risk-analysis.content}}/10\n\n{{steps.ai-review.content}}"
+      }
+    },
+    {
+      "id": "slack-notify",
+      "type": "slack.notify",
+      "depends_on": ["changelog-summary", "risk-analysis"],
+      "config": {
+        "webhook_url": "{{env.SLACK_WEBHOOK_URL}}",
+        "channel": "#deployments",
+        "message": "🤖 AI Changelog Summary\n\n```\n{{steps.changelog-summary.content}}\n```\n\nRisk Score: {{steps.risk-analysis.content}}/10",
+        "username": "Shiro Bot",
+        "icon_emoji": ":robot_face:"
+      }
+    }
+  ]
+}
